@@ -2711,10 +2711,10 @@ export interface ProfileAddressTO {
 }
 
 export interface ProfileEmailTO {
+  email: string;
   label: string | null;
   type: number;
-  uid: string;
-  value: string;
+  verified: boolean;
 }
 
 export interface ProfilePhoneNumberTO {
