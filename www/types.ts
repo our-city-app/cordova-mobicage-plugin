@@ -206,6 +206,14 @@ export interface AddProfileAddressResponseTO {
   address: ProfileAddressTO;
 }
 
+export interface AddProfileEmailRequestTO {
+  email: BaseProfileEmailTO;
+}
+
+export interface AddProfileEmailResponseTO {
+  email: ProfileEmailTO;
+}
+
 export interface AddProfilePhoneNumberRequestTO {
   phone_number: BaseProfilePhoneNumberTO;
 }
@@ -369,6 +377,12 @@ export interface BaseProfileAddressTO {
   street_name: string | null;
   type: number;
   zip_code: string | null;
+}
+
+export interface BaseProfileEmailTO {
+  email: string;
+  label: string | null;
+  type: number;
 }
 
 export interface BaseProfilePhoneNumberTO {
@@ -549,6 +563,14 @@ export interface DeleteProfileAddressesRequestTO {
 
 export interface DeleteProfileAddressesResponseTO {
   uids: string[];
+}
+
+export interface DeleteProfileEmailRequestTO {
+  email: string;
+}
+
+export interface DeleteProfileEmailResponseTO {
+  email: string;
 }
 
 export interface DeleteProfilePhoneNumbersRequestTO {
@@ -2816,6 +2838,13 @@ export interface ReportObjectionableContentRequestTO {
 export interface ReportObjectionableContentResponseTO {
 }
 
+export interface RequestProfileEmailVerificationRequestTO {
+  email: string;
+}
+
+export interface RequestProfileEmailVerificationResponseTO {
+}
+
 export interface RequiredValidatorTO {
   error_message: string | null;
   readonly type: FormValidatorType.REQUIRED;
@@ -3871,6 +3900,15 @@ export interface UpdateProfileAddressResponseTO {
   address: ProfileAddressTO;
 }
 
+export interface UpdateProfileEmailRequestTO {
+  email: string;
+  label: string;
+}
+
+export interface UpdateProfileEmailResponseTO {
+  email: ProfileEmailTO;
+}
+
 export interface UpdateProfilePhoneNumberRequestTO {
   phone_number: ProfilePhoneNumberTO;
 }
@@ -4005,6 +4043,15 @@ export interface ValueTO {
   image_url: string | null;
   label: string;
   value: string;
+}
+
+export interface VerifyProfileEmailRequestTO {
+  email: string;
+  pin_code: number;
+}
+
+export interface VerifyProfileEmailResponseTO {
+  email: ProfileEmailTO;
 }
 
 export interface VoteSectionTO {
