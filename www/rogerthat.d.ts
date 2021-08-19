@@ -19,6 +19,14 @@ export * from './rogerthat-errors';
 export * from './rogerthat-payment';
 export * from './types';
 
+
+export const enum UserGender {
+  UNKNOWN = 0,
+  MALE = 1,
+  FEMALE = 2,
+  OTHER = 3,
+}
+
 export interface RogerthatUserInfo {
   account: string;
   avatarUrl: string;
@@ -26,8 +34,10 @@ export interface RogerthatUserInfo {
   homeScreenId: string;
   language: string;
   name: string;
-  firstName: string;
-  lastName: string;
+  firstName: string | null;
+  lastName: string | null;
+  birthDate?: string | null;
+  gender?: UserGender;
 }
 
 export interface RogerthatSystem {
