@@ -36,7 +36,7 @@ export interface RogerthatUserInfo {
   name: string;
   firstName: string | null;
   lastName: string | null;
-  birthDate?: string | null;
+  birthdate?: string | null;
   gender?: UserGender;
 }
 
