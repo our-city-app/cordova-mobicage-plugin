@@ -1610,6 +1610,7 @@ export interface LineStringGeometryTO {
 export interface LinkListSectionItemTO {
   external: boolean;
   request_user_link: boolean;
+  requires_login: boolean;
   style: number;
   url: string;
   icon: string | null;

@@ -149,7 +149,7 @@
 - (void)api_call:(CDVInvokedUrlCommand *)command
 {
     HERE();
-    BOOL synchronous = [self.helper sendApiCall:[self getRequestParams:command] resultHandler:[self defaultResultHandlerWithCommand:command]];
+    BOOL synchronous = [self.helper sendApiCall:[self getRequestParams:command] resultHandler:[self resultHandlerWithCommand:command]];
     if (!synchronous) {
         [self commandProcessed:command];
     }
@@ -172,20 +172,20 @@
 - (void)badges_list:(CDVInvokedUrlCommand *)command
 {
     HERE();
-    [self.helper listbadges:[self listBadgesResultHandlerWithCommand:command]];
+    [self.helper listbadges:[self resultArrayHandlerWithCommand:command]];
 }
 
 - (void)camera_startScanningQrCode:(CDVInvokedUrlCommand *)command
 {
     HERE();
-    [self.helper startScanningQrCodeWithResultHandler:[self defaultResultHandlerWithCommand:command]
+    [self.helper startScanningQrCodeWithResultHandler:[self resultHandlerWithCommand:command]
                                                params:[self getRequestParams:command]];
 }
 
 - (void)camera_stopScanningQrCode:(CDVInvokedUrlCommand *)command
 {
     HERE();
-    [self.helper stopScanningQrCodeWithResultHandler:[self defaultResultHandlerWithCommand:command]
+    [self.helper stopScanningQrCodeWithResultHandler:[self resultHandlerWithCommand:command]
                                               params:[self getRequestParams:command]];
 }
 
@@ -199,28 +199,28 @@
 - (void)message_open:(CDVInvokedUrlCommand *)command
 {
     HERE();
-    [self.helper openMessageWithResultHandler:[self defaultResultHandlerWithCommand:command]
+    [self.helper openMessageWithResultHandler:[self resultHandlerWithCommand:command]
                                        params:[self getRequestParams:command]];
 }
 
 - (void)news_getNewsGroup:(CDVInvokedUrlCommand *)command
 {
     HERE();
-    [self.helper getNewsGroupWithResultHandler:[self defaultResultHandlerWithCommand:command]
+    [self.helper getNewsGroupWithResultHandler:[self resultHandlerWithCommand:command]
                                         params:[self getRequestParams:command]];
 }
 
 - (void)news_getNewsGroups:(CDVInvokedUrlCommand *)command
 {
     HERE();
-    [self.helper getNewsGroupsWithResultHandler:[self defaultResultHandlerWithCommand:command]
+    [self.helper getNewsGroupsWithResultHandler:[self resultHandlerWithCommand:command]
                                          params:[self getRequestParams:command]];
 }
 
 - (void)news_getNewsStreamItems:(CDVInvokedUrlCommand *)command
 {
     HERE();
-    [self.helper getNewsStreamItemsWithResultHandler:[self defaultResultHandlerWithCommand:command]
+    [self.helper getNewsStreamItemsWithResultHandler:[self resultHandlerWithCommand:command]
                                               params:[self getRequestParams:command]];
 }
 
@@ -239,7 +239,7 @@
 - (void)user_getProfile:(CDVInvokedUrlCommand *)command
 {
     HERE();
-    [self.helper getUserProfileWithResultHandler:[self getUserGetProfileResultHandlerWithCommand:command]
+    [self.helper getUserProfileWithResultHandler:[self resultDictHandlerWithCommand:command]
                                           params:[self getRequestParams:command]];
 }
 
@@ -256,30 +256,37 @@
                                               params:[self getRequestParams:command]];
 }
 
+- (void)user_isLoggedIn:(CDVInvokedUrlCommand *)command
+{
+    HERE();
+    [self.helper getUserIsLoggedInWithResultHandler:[self resultDictHandlerWithCommand:command]
+                                             params:[self getRequestParams:command]];
+}
+
 - (void)util_isConnectedToInternet:(CDVInvokedUrlCommand *)command
 {
     HERE();
-    [self.helper isConnectedToInternetWithResultHandler:[self defaultResultHandlerWithCommand:command]];
+    [self.helper isConnectedToInternetWithResultHandler:[self resultHandlerWithCommand:command]];
 }
 
 - (void)util_open:(CDVInvokedUrlCommand *)command
 {
     HERE();
-    [self.helper openNavigationItemWithResultHandler:[self defaultResultHandlerWithCommand:command]
+    [self.helper openNavigationItemWithResultHandler:[self resultHandlerWithCommand:command]
                                               params:[self getRequestParams:command]];
 }
 
 - (void)util_playAudio:(CDVInvokedUrlCommand *)command
 {
     HERE();
-    [self.helper playAudioWithResultHandler:[self defaultResultHandlerWithCommand:command]
+    [self.helper playAudioWithResultHandler:[self resultHandlerWithCommand:command]
                                      params:[self getRequestParams:command]];
 }
 
 - (void)homescreen_getHomeScreenContent:(CDVInvokedUrlCommand *)command
 {
     HERE();
-    [self.helper getHomescreenWithResultHandler:[self getHomeScreenResultHandlerWithCommand:command]
+    [self.helper getHomescreenWithResultHandler:[self resultDictErrorStringHandlerWithCommand:command]
                                          params:[self getRequestParams:command]];
 }
 
@@ -291,7 +298,7 @@
     return ((MCTCordovaScreenBrandingVC *)self.viewController);
 }
 
-- (MCTScreenBrandingResultHandler)defaultResultHandlerWithCommand:(CDVInvokedUrlCommand *)command
+- (MCTScreenBrandingResultHandler)resultHandlerWithCommand:(CDVInvokedUrlCommand *)command
 {
     __weak __typeof__(self) weakSelf = self;
     return ^(NSDictionary *result, NSDictionary *error) {
@@ -299,7 +306,7 @@
     };
 }
 
-- (MCTScreenBrandingListBadgesResultHandler)listBadgesResultHandlerWithCommand:(CDVInvokedUrlCommand *)command
+- (MCTScreenBrandingResultArrayHandler)resultArrayHandlerWithCommand:(CDVInvokedUrlCommand *)command
 {
     __weak __typeof__(self) weakSelf = self;
     return ^(NSArray *result) {
@@ -307,7 +314,7 @@
     };
 }
 
-- (MCTScreenBrandingGetHomeScreenResultHandler)getHomeScreenResultHandlerWithCommand:(CDVInvokedUrlCommand *)command
+- (MCTScreenBrandingResultDictErrorStringHandler)resultDictErrorStringHandlerWithCommand:(CDVInvokedUrlCommand *)command
 {
     __weak __typeof__(self) weakSelf = self;
     return ^(NSDictionary *result, NSString *error) {
@@ -315,7 +322,7 @@
     };
 }
 
-- (MCTScreenBrandingUserGetProfileResultHandler)getUserGetProfileResultHandlerWithCommand:(CDVInvokedUrlCommand *)command
+- (MCTScreenBrandingResultDictHandler)resultDictHandlerWithCommand:(CDVInvokedUrlCommand *)command
 {
     __weak __typeof__(self) weakSelf = self;
     return ^(NSDictionary *result) {
@@ -323,7 +330,7 @@
     };
 }
 
-- (MCTScreenBrandingGetUserInformationResultHandler)getUserInformationResultHandlerWithCommand:(CDVInvokedUrlCommand *)command
+- (MCTScreenBrandingResultDictErrorStringHandler)getUserInformationResultHandlerWithCommand:(CDVInvokedUrlCommand *)command
 {
     __weak __typeof__(self) weakSelf = self;
     return ^(NSDictionary *result, NSString *error) {

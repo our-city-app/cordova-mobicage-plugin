@@ -34,6 +34,7 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.mobicage.api.news.Rpc.getNewsStreamItems
 import com.mobicage.rogerth.at.R
+import com.mobicage.rogerthat.App
 import com.mobicage.rogerthat.BarcodeScanningActivity
 import com.mobicage.rogerthat.IdentityStore
 import com.mobicage.rogerthat.ServiceBoundActivity
@@ -57,6 +58,7 @@ import com.mobicage.rogerthat.util.system.SafeRunnable
 import com.mobicage.rpc.IJSONable
 import com.mobicage.rpc.IncompleteMessageException
 import com.mobicage.rpc.IntentResponseHandler
+import com.mobicage.rpc.config.AppConstants
 import com.mobicage.to.news.GetNewsGroupRequestTO
 import com.mobicage.to.news.GetNewsStreamItemsRequestTO
 import com.mobicage.to.news.GetNewsStreamItemsResponseTO
@@ -183,6 +185,7 @@ class RogerthatPlugin : CordovaPlugin() {
             "user_put" -> putUserData(callbackContext, args)
             "user_getProfile" -> getUserProfile(callbackContext)
             "user_getUserInformation" -> getUserInformation(callbackContext)
+            "user_isLoggedIn" -> isLoggedIn(callbackContext)
             "util_isConnectedToInternet" -> isConnectedToInternet(callbackContext)
             "util_open" -> openActivity(callbackContext, args)
             "util_playAudio" -> playAudio(callbackContext, args)
@@ -646,6 +649,20 @@ class RogerthatPlugin : CordovaPlugin() {
         val liveData = doGetHomeScreen(identity.communityId, identity.homeScreenId)
         liveData.observe(activity, homeScreenObserver!!)
         homeScreenLiveData = liveData
+    }
+
+    private fun isLoggedIn(callbackContext: CallbackContext) {
+        if (AppConstants.AUTH_SESSION_ACM) {
+            App.sessionMgr.isLoggedIn.observe(getServiceBoundActivity()) {
+                val result = JSONObject()
+                result.put("isLoggedIn", it)
+                sendPluginResult(callbackContext, result)
+            }
+        } else {
+            val result = JSONObject()
+            result.put("isLoggedIn", true)
+            callbackContext.success(result)
+        }
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, intent: Intent) {

@@ -186,6 +186,9 @@ function RogerthatPlugin() {
         getUserInformation: function(resolve, reject) {
             utils.exec(resolve, reject, 'user_getUserInformation', [])
         },
+        isLoggedIn: function(resolve, reject) {
+            utils.exec(resolve, reject, 'user_isLoggedIn', [])
+        },
         put: function (data) {
             var crp = {};
             if (data === undefined) {

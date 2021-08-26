@@ -283,6 +283,10 @@ export class Rogerthat {
       resolve: (result: GetUserInformationResponseTO) => void,
       reject?: (error: string) => void,
     ) => void;
+    isLoggedIn: (
+      resolve: (result: { isLoggedIn: boolean }) => void,
+      reject?: (error: string) => void,
+    ) => void;
   } & RogerthatUserInfo; // accessing profile info this way is deprecated (since it isn't updated in realtime) and might be removed later
   util: RogerthatUtil;
   homeScreen: {
