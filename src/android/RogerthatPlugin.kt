@@ -172,14 +172,14 @@ class RogerthatPlugin : CordovaPlugin() {
             "message_open" -> openMessage(callbackContext, args)
             "news_getNewsGroup" -> getNewsGroup(
                 callbackContext, GetNewsGroupRequestTO.fromJSONMap(
-                    JsonUtils.toMap(args)
-                )
+                JsonUtils.toMap(args)
+            )
             )
             "news_getNewsGroups" -> getNewsGroups(callbackContext)
             "news_getNewsStreamItems" -> getNewsStreamItems(
                 callbackContext, GetNewsStreamItemsRequestTO.fromJSONMap(
-                    JsonUtils.toMap(args)
-                )
+                JsonUtils.toMap(args)
+            )
             )
             "ui_hideKeyboard" -> hideKeyboard(callbackContext)
             "user_put" -> putUserData(callbackContext, args)
@@ -731,6 +731,7 @@ class RogerthatPlugin : CordovaPlugin() {
         filter.addAction(NewsPlugin.GET_NEWS_STREAM_ITEMS_SUCCESS)
         filter.addAction(NewsPlugin.GET_NEWS_STREAM_ITEMS_FAILED)
         filter.addAction(IdentityStore.IDENTITY_CHANGED_INTENT)
+        filter.addAction(CordovaFragment.INTENT_BROADCAST)
         return filter
     }
 
@@ -775,6 +776,16 @@ class RogerthatPlugin : CordovaPlugin() {
                 IdentityStore.IDENTITY_CHANGED_INTENT -> {
                     reloadHomeScreen()
                     notifyProfileChanges()
+                }
+                CordovaFragment.INTENT_BROADCAST -> {
+                    val url = intent.getStringExtra(CordovaFragment.INTENT_BROADCAST_URL)!!
+                    val embeddedApp =
+                        intent.getStringExtra(CordovaFragment.INTENT_BROADCAST_EMBEDDED_APP)!!
+                    val params = mapOf(
+                        "url" to url,
+                        "embeddedApp" to embeddedApp,
+                    )
+                    sendCallbackUpdate("urlOpened", JSONObject(params))
                 }
             }
         }
