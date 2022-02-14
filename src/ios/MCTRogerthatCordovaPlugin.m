@@ -463,6 +463,11 @@
     [self sendCallback:@"badgeUpdated" withArguments:params];
 }
 
+- (void)urlOpened:(NSDictionary *)info
+{
+    [self sendCallback:@"urlOpened" withArguments:info];
+}
+
 - (BOOL)shouldOverrideLoadWithRequest:(NSURLRequest*)request navigationType:(int)navigationType
 {
     if ([request.URL.scheme isEqualToString:@"poke"]) {
