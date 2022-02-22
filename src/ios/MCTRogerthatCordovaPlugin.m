@@ -25,6 +25,7 @@
 #import "MCTSystemPlugin.h"
 #import "MCTUIUtils.h"
 
+#import <SafariServices/SafariServices.h>
 
 #pragma mark - CDVInvokedUrlCommand+Additions
 
@@ -469,6 +470,14 @@
         LOG(@"Received %@", request.URL.absoluteString);
         [self.helper pokeWithTag:[request.URL.absoluteString substringFromIndex:[@"poke://" length]]];
         return NO;
+    }
+    if (navigationType == WKNavigationTypeLinkActivated || navigationType == WKNavigationTypeOther) {
+        if ([request.URL.scheme hasPrefix:@"http"]) {
+            LOG(@"Received %@", request.URL.absoluteString);
+            UIViewController *vc = [[SFSafariViewController alloc] initWithURL:request.URL];
+            [self.vc presentViewController:vc animated:YES completion:nil];
+            return NO;
+        }
     }
 
     return YES;
