@@ -665,38 +665,34 @@ class RogerthatPlugin : CordovaPlugin() {
         }
     }
 
-    override fun onActivityResult(requestCode: Int, resultCode: Int, intent: Intent) {
+    override fun onActivityResult(requestCode: Int, resultCode: Int, intent: Intent?) {
         L.i("RogerthatPlugin.onActivityResult requestCode -> $requestCode")
         if (requestCode == ScanTabActivity.QR_SCAN_RESULT) {
             mQRCodeScannerOpen = false
             if (resultCode == Activity.RESULT_OK) {
-                val rawScanResult = intent.getStringExtra(BarcodeScanningActivity.RAW_VALUE)
-                try {
-                    if (rawScanResult != null) {
-                        L.i("Scanned QR code: $rawScanResult")
-                        val result = JSONObject()
-                        result.put("content", rawScanResult)
-                        if (rawScanResult.lowercase(Locale.US).startsWith("http://")
-                            || rawScanResult.lowercase(Locale.US).startsWith("https://")
-                        ) {
-                            if (mScanCommunication == null) {
-                                mScanCommunication =
-                                    ScanCommunication(getServiceBoundActivity().mainService)
-                            }
-                            mScanCommunication!!.resolveUrl(rawScanResult)
-                            result.put("status", "resolving")
-                        } else {
-                            result.put("status", "resolved")
+                val rawScanResult = intent!!.getStringExtra(BarcodeScanningActivity.RAW_VALUE)
+                if (rawScanResult != null) {
+                    L.i("Scanned QR code: $rawScanResult")
+                    val result = JSONObject()
+                    result.put("content", rawScanResult)
+                    if (rawScanResult.lowercase(Locale.US).startsWith("http://")
+                        || rawScanResult.lowercase(Locale.US).startsWith("https://")
+                    ) {
+                        if (mScanCommunication == null) {
+                            mScanCommunication =
+                                ScanCommunication(getServiceBoundActivity().mainService)
                         }
-                        sendCallbackUpdate("qrCodeScanned", result)
+                        mScanCommunication!!.resolveUrl(rawScanResult)
+                        result.put("status", "resolving")
                     } else {
-                        val obj = JSONObject()
-                        obj.put("status", "error")
-                        obj.put("content", "An unknown error has occurred")
-                        sendCallbackUpdate("qrCodeScanned", obj)
+                        result.put("status", "resolved")
                     }
-                } catch (e: JSONException) {
-                    L.e("JSONException... This should never happen", e)
+                    sendCallbackUpdate("qrCodeScanned", result)
+                } else {
+                    val obj = JSONObject()
+                    obj.put("status", "error")
+                    obj.put("content", "An unknown error has occurred")
+                    sendCallbackUpdate("qrCodeScanned", obj)
                 }
             }
         }
