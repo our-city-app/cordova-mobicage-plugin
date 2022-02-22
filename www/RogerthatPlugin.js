@@ -16,7 +16,8 @@ var userCallbacks = {
     ready: _dummy,
     serviceDataUpdated: _dummy,
     userDataUpdated: _dummy,
-    badgeUpdated: _dummy
+    badgeUpdated: _dummy,
+    urlOpened: _dummy,
 };
 
 var utils = {
@@ -80,6 +81,8 @@ var utils = {
             rogerthatPlugin.service.data = result.args;
             userCallbacks.serviceDataUpdated();
 
+        } else if (result.callback === 'urlOpened'){
+            userCallbacks.urlOpened(result.args);
         } else {
             utils.logFunctionName("processCallbackResult was unhandled");
         }

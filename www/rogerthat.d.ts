@@ -128,6 +128,11 @@ export interface QrCodeScannedContent {
   userDetails?: UserDetails;
 }
 
+export interface UrlOpenedResult {
+  url: string;
+  embeddedApp: string;
+}
+
 export interface RogerthatCallbacks {
   /**
    * @deprecated use rogerthat.getBadges instead
@@ -152,6 +157,11 @@ export interface RogerthatCallbacks {
    * The app received an update and rogerthat.user.data is updated.
    */
   userDataUpdated: (callback: () => void) => void;
+  /**
+  * The app was re-opened via an url.
+  * For example, https://onezestad.app/app/embedded-app/<embedded-app-id>
+  */
+  urlOpened: (callback: (result: UrlOpenedResult) => void) => void;
 }
 
 export interface RogerthatApiCallbacks {
