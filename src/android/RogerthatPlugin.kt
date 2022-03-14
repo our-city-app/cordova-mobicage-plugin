@@ -363,7 +363,7 @@ class RogerthatPlugin : CordovaPlugin() {
     }
 
     private fun exitApp(callbackContext: CallbackContext) {
-        getServiceBoundActivity().finish()
+        getServiceBoundActivity().onBackPressed()
         callbackContext.success(JSONObject())
     }
 

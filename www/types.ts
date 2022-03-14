@@ -883,7 +883,6 @@ export interface FriendTO {
   flags: number;
   generation: number;
   hasUserData: boolean;
-  homeBrandingHash: string | null;
   name: string | null;
   organizationType: number;
   pokeDescription: string | null;
