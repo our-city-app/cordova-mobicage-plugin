@@ -81,7 +81,7 @@ class RogerthatPlugin : CordovaPlugin() {
     private lateinit var mActionScreenUtils: ActionScreenUtils
     private var mScanCommunication: ScanCommunication? = null
     private var mPoker: Poker<ServiceBoundActivity>? = null
-    private var mBroadcastReceiver: BroadcastReceiver? = null
+    private val mBroadcastReceiver: BroadcastReceiver = getBroadcastReceiver()
     private val callbackMap: MutableMap<String, CallbackContext> = HashMap()
     private val mIntentCallback: ActionScreenUtils.IntentCallback =
         object : ActionScreenUtils.IntentCallback {
@@ -701,7 +701,6 @@ class RogerthatPlugin : CordovaPlugin() {
 
     override fun pluginInitialize() {
         setRogerthatInterface()
-        mBroadcastReceiver = getBroadcastReceiver()
         getServiceBoundActivity().registerReceiver(mBroadcastReceiver, getIntentFilter())
     }
 
