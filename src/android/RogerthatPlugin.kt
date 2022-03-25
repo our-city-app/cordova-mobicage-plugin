@@ -81,7 +81,7 @@ class RogerthatPlugin : CordovaPlugin() {
     private lateinit var mActionScreenUtils: ActionScreenUtils
     private var mScanCommunication: ScanCommunication? = null
     private var mPoker: Poker<ServiceBoundActivity>? = null
-    private val mBroadcastReceiver: BroadcastReceiver = getBroadcastReceiver()
+    private val mBroadcastReceiver = getBroadcastReceiver()
     private val callbackMap: MutableMap<String, CallbackContext> = HashMap()
     private val mIntentCallback: ActionScreenUtils.IntentCallback =
         object : ActionScreenUtils.IntentCallback {
