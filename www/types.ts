@@ -2906,16 +2906,6 @@ export interface SaveMapItemVoteResponseTO {
   vote_id: string;
 }
 
-export interface SaveMapNotificationsRequestTO {
-  notifications: MapNotificationsTO;
-  tag: string;
-}
-
-export interface SaveMapNotificationsResponseTO {
-  message: string | null;
-  notifications: MapNotificationsTO;
-}
-
 export interface SaveNewsStatisticsRequestTO {
   news_ids: number[];
   type: string;
