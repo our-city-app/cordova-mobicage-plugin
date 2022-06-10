@@ -3,7 +3,8 @@ export type AppSearchSuggestionTO =
   AppSearchSuggestionActionTO;
 
 export type FormComponentTO =
-  DatetimeComponentTO
+  AccordionComponentTO
+  | DatetimeComponentTO
   | FileComponentTO
   | LocationComponentTO
   | MultiSelectComponentTO
@@ -13,7 +14,8 @@ export type FormComponentTO =
   | TextInputComponentTO;
 
 export type FormComponentValueTO =
-  DatetimeComponentValueTO
+  AccordionComponentValueTO
+  | DatetimeComponentValueTO
   | FileComponentValueTO
   | LocationComponentValueTO
   | MultiSelectComponentValueTO
@@ -36,7 +38,8 @@ export type JobOfferActionTO =
   | JobOfferOpenActionTO;
 
 export type MapActionChipTO =
-  SearchSuggestionTO;
+  SearchSuggestionTO
+  | SearchTagTO;
 
 export type MapAnnouncementTO =
   TextAnnouncementTO;
@@ -90,11 +93,101 @@ export type Step =
   | MessageFlowStepTO;
 
 
+export const enum AppEvent {
+  BRANDING = 'branding',
+  EMBEDDED_APP = 'embedded_app',
+  FLOW = 'flow',
+  FORM_STARTED = 'form.started',
+  FORM_SUBMITTED = 'form.submitted',
+  GEO = 'geo',
+  HTTP = 'http',
+  MAIL = 'mail',
+  SSO_OPEN_LINK = 'sso.open_link',
+  SSO_REQUEST_LINK = 'sso.request_link',
+  TEL = 'tel',
+}
+
+export const enum AppPage {
+  APP_SEARCH = 'app.search',
+  APP_TOUR = 'app.tour',
+  BOTTOM_NAVIGATION = 'bottom_navigation',
+  CONSENT_PUSH_NOTIFICATIONS = 'push_notifications_consent',
+  FORM = 'form',
+  FRIENDS_ADD = 'friends.add',
+  FRIENDS_DETAIL = 'friends.detail',
+  FRIENDS_LIST = 'friends.list',
+  GPS_LOCATION = 'gps_location',
+  HTML_BRANDING = 'html.branding',
+  HTML_CORDOVA = 'html.cordova',
+  JOBS = 'jobs',
+  JOBS_DETAIL = 'jobs.detail',
+  JOBS_LIST = 'jobs.list',
+  JOBS_SETTINGS = 'jobs.settings',
+  JOBS_SETTINGS_CONTRACT_TYPES = 'jobs.settings.contract_types',
+  JOBS_SETTINGS_JOB_DOMAINS = 'jobs.settings.job_domains',
+  JOBS_SETTINGS_KEYWORDS = 'jobs.settings.keywords',
+  JOBS_SETTINGS_LOCATION = 'jobs.settings.location',
+  JOBS_SETTINGS_NOTIFICATIONS = 'jobs.settings.notifications',
+  JOBS_START_CHAT = 'jobs.start_chat',
+  MAP = 'map',
+  MESSAGING_ATTACHMENT = 'messaging.attachment',
+  MESSAGING_BUTTONS = 'messaging.buttons',
+  MESSAGING_CHAT = 'messaging.chat',
+  MESSAGING_CHAT_INFO = 'messaging.chat.info',
+  MESSAGING_FLOW_DETAIL = 'messaging.flow.detail',
+  MESSAGING_FLOW_OVERVIEW = 'messaging.flow.overview',
+  MESSAGING_LIST = 'messaging.list',
+  MESSAGING_MEMBERS = 'messaging.members',
+  MESSAGING_NEW = 'messaging.new',
+  MESSAGING_NEW_BUTTONS = 'messaging.new.buttons',
+  MESSAGING_NEW_RECIPIENTS = 'messaging.new.recipients',
+  MESSAGING_NEW_TEXT = 'messaging.new.text',
+  NEWS_GROUPS = 'news.groups',
+  NEWS_ITEM = 'news.item',
+  NEWS_LIST = 'news.list',
+  QRCODE_ADD = 'qrcode.add',
+  QRCODE_DETAIL = 'qrcode.detail',
+  QRCODE_LIST = 'qrcode.list',
+  QRCODE_READER = 'qrcode.reader',
+  QRCODE_SCANNER = 'qrcode.scanner',
+  QRCODE_SCANNER_RESULT = 'qrcode.scanner_result',
+  REGISTRATION_ACM = 'registration.acm',
+  REGISTRATION_COMMUNITY = 'registration.community',
+  REGISTRATION_DEVICE = 'registration.device',
+  REGISTRATION_HOMESCREEN = 'registration.homescreen',
+  REGISTRATION_LOGIN_OPTIONS = 'registration.login_options',
+  REGISTRATION_START = 'registration.start',
+  REGISTRATION_VERIFY_EMAIL = 'registration.verify_email',
+  REPORT_CONTENT = 'report_content',
+  SERVICES_DETAIL = 'services.detail',
+  SERVICES_LIST = 'services.list',
+  SERVICES_MENU = 'services.menu',
+  SERVICES_SEARCH = 'services.search',
+  SERVICES_SHARE = 'services.share',
+  SESSION_LOGIN = 'session.login',
+  SETTINGS = 'settings',
+  SETTINGS_ABOUT = 'settings.about',
+  SETTINGS_DATA_DOWNLOAD = 'settings.data_download',
+  SETTINGS_LANGUAGE = 'settings.language',
+  SETTINGS_NOTIFICATIONS = 'settings.notifications',
+  SETTINGS_PROFILE = 'settings.profile',
+  SETTINGS_PROFILE_ADDRESS = 'settings.profile.address',
+  SETTINGS_PROFILE_ADDRESSES = 'settings.profile.addresses',
+  SETTINGS_PROFILE_CHANGE_HOME_SCREEN = 'settings.profile.home_screen',
+  SETTINGS_PROFILE_EMAIL = 'settings.profile.email',
+  SETTINGS_PROFILE_EMAILS = 'settings.profile.emails',
+  SETTINGS_PROFILE_PHONE_NUMBER = 'settings.profile.phone_number',
+  SETTINGS_PROFILE_PHONE_NUMBERS = 'settings.profile.phone_numbers',
+  TERMS_OF_SERVICE = 'terms_of_service',
+  YOUTUBE_PLAYER = 'youtube_player',
+}
+
 export const enum AppSearchSuggestionType {
   ACTION = 'action',
 }
 
 export const enum FormComponentType {
+  ACCORDION = 'accordion',
   DATETIME = 'datetime',
   FILE = 'file',
   LOCATION = 'location',
@@ -123,6 +216,7 @@ export const enum JobOfferActionType {
 
 export const enum MapActionChipType {
   SEARCH_SUGGESTION = 'search_suggestion',
+  SEARCH_TAG = 'search_tag',
 }
 
 export const enum MapAnnouncementType {
@@ -186,6 +280,22 @@ export const enum NotificationSettingType {
   TOGGLE = 'toggle',
 }
 
+
+export interface AccordionComponentTO {
+  description: string | null;
+  expansion_panels: ExpansionPanelTO[];
+  id: string;
+  sensitive: boolean;
+  title: string | null;
+  readonly type: FormComponentType.ACCORDION;
+}
+
+export interface AccordionComponentValueTO {
+  id: string;
+  item_id: string;
+  panel_id: string;
+  readonly type: FormComponentType.ACCORDION;
+}
 
 export interface AckInvitationByInvitationSecretRequestTO {
   invitor_code: string | null;
@@ -311,8 +421,8 @@ export interface AppSearchTO {
 }
 
 export interface AttachmentTO {
-  content_type: string | null;
-  download_url: string | null;
+  content_type: string;
+  download_url: string;
   name: string | null;
   size: number;
   thumbnail: Thumbnail | null;
@@ -538,18 +648,18 @@ export interface DatetimeComponentTO {
   id: string;
   sensitive: boolean;
   title: string | null;
-  validators: FormValidatorTO[];
   readonly type: FormComponentType.DATETIME;
+  validators: FormValidatorTO[];
 }
 
 export interface DatetimeComponentValueTO {
   day: number;
   hour: number;
+  id: string;
   minute: number;
   month: number;
-  year: number;
-  id: string;
   readonly type: FormComponentType.DATETIME;
+  year: number;
 }
 
 export interface DeleteConversationRequestTO {
@@ -647,6 +757,20 @@ export interface ExpandableListSectionItemTO {
   readonly type: MapListSectionItemType.EXPANDABLE;
 }
 
+export interface ExpansionPanelItemTO {
+  description: string | null;
+  id: string;
+  next_action: NextActionTO;
+  title: string;
+}
+
+export interface ExpansionPanelTO {
+  icon: string | null;
+  id: string;
+  items: ExpansionPanelItemTO[];
+  title: string;
+}
+
 export interface FileComponentFileTO {
   file_type: string | null;
   name: string;
@@ -659,8 +783,8 @@ export interface FileComponentTO {
   id: string;
   sensitive: boolean;
   title: string | null;
-  validators: FormValidatorTO[];
   readonly type: FormComponentType.FILE;
+  validators: FormValidatorTO[];
 }
 
 export interface FileComponentValueTO {
@@ -678,7 +802,7 @@ export interface FindRogerthatUsersViaEmailResponseTO {
 }
 
 export interface FindServiceCategoryTO {
-  category: string | null;
+  category: string;
   cursor: string | null;
   items: FindServiceItemTO[];
 }
@@ -718,8 +842,8 @@ export interface FloatWidgetResultTO {
 
 export interface FlowStartedRequestTO {
   message_flow_run_id: string | null;
-  service: string | null;
-  static_flow_hash: string | null;
+  service: string;
+  static_flow_hash: string;
   thread_key: string | null;
 }
 
@@ -752,6 +876,7 @@ export interface FormMessageTO {
   key: string;
   member: MemberStatusTO;
   message: string | null;
+  readonly message_type: NewMessageType.FORM_MESSAGE;
   parent_key: string | null;
   priority: number;
   sender: string;
@@ -761,7 +886,6 @@ export interface FormMessageTO {
   thread_size: number;
   thread_text_color: string | null;
   timestamp: number;
-  readonly message_type: NewMessageType.FORM_MESSAGE;
 }
 
 export interface FormResult {
@@ -1065,6 +1189,7 @@ export interface GetFormResponseTO {
   id: number;
   max_submissions: number;
   sections: FormSectionTO[];
+  service: string;
   submission_section: FormSubmissionSectionTO | null;
   title: string | null;
   version: number;
@@ -1126,8 +1251,8 @@ export interface GetIdentityQRCodeRequestTO {
 }
 
 export interface GetIdentityQRCodeResponseTO {
-  qrcode: string | null;
-  shortUrl: string | null;
+  qrcode: string;
+  shortUrl: string;
 }
 
 export interface GetIdentityRequestTO {
@@ -1135,7 +1260,7 @@ export interface GetIdentityRequestTO {
 
 export interface GetIdentityResponseTO {
   identity: IdentityTO;
-  shortUrl: string | null;
+  shortUrl: string;
 }
 
 export interface GetJSEmbeddingRequestTO {
@@ -1469,6 +1594,7 @@ export interface IdentityTO {
   owncloudUsername: string | null;
   profileData: string | null;
   qualifiedIdentifier: string | null;
+  readOnlyProperties: string[];
 }
 
 export interface IdentityUpdateRequestTO {
@@ -1607,22 +1733,22 @@ export interface LatLonTO {
 }
 
 export interface LineStringGeometryTO {
-  line: CoordsListTO;
   color: string | null;
+  line: CoordsListTO;
   readonly type: MapGeometryType.LINE_STRING;
 }
 
 export interface LinkListSectionItemTO {
+  background_color: string | null;
   external: boolean;
+  icon: string | null;
+  icon_color: string | null;
   request_user_link: boolean;
   requires_login: boolean;
   style: number;
-  url: string;
-  background_color: string | null;
-  icon: string | null;
-  icon_color: string | null;
   title: string | null;
   readonly type: MapListSectionItemType.LINK;
+  url: string;
 }
 
 export interface ListSectionTO {
@@ -1651,15 +1777,15 @@ export interface LocationComponentTO {
   id: string;
   sensitive: boolean;
   title: string | null;
-  validators: FormValidatorTO[];
   readonly type: FormComponentType.LOCATION;
+  validators: FormValidatorTO[];
 }
 
 export interface LocationComponentValueTO {
   address: PostalAddressTO | null;
+  id: string;
   latitude: number;
   longitude: number;
-  id: string;
   readonly type: FormComponentType.LOCATION;
 }
 
@@ -1760,12 +1886,14 @@ export interface MapSearchSuggestionItemTO {
 }
 
 export interface MapSearchSuggestionKeywordTO {
+  tag: string | null;
   text: string;
   readonly type: MapSearchSuggestionType.KEYWORD;
 }
 
 export interface MapSearchTO {
   query: string | null;
+  tags: string[];
 }
 
 export interface MapVoteOptionTO {
@@ -1791,20 +1919,20 @@ export interface MaxDateValidatorTO {
   hour: number;
   minute: number;
   month: number;
-  year: number;
   readonly type: FormValidatorType.MAXDATE;
+  year: number;
 }
 
 export interface MaxLengthValidatorTO {
   error_message: string | null;
-  value: number;
   readonly type: FormValidatorType.MAXLENGTH;
+  value: number;
 }
 
 export interface MaxValidatorTO {
   error_message: string | null;
-  value: number;
   readonly type: FormValidatorType.MAX;
+  value: number;
 }
 
 export interface MediaSectionTO {
@@ -1926,6 +2054,7 @@ export interface MessageTO {
   key: string;
   members: MemberStatusTO[];
   message: string | null;
+  readonly message_type: NewMessageType.MESSAGE;
   parent_key: string | null;
   priority: number;
   sender: string;
@@ -1936,7 +2065,6 @@ export interface MessageTO {
   thread_text_color: string | null;
   timeout: number;
   timestamp: number;
-  readonly message_type: NewMessageType.MESSAGE;
 }
 
 export interface MinDateValidatorTO {
@@ -1945,31 +2073,31 @@ export interface MinDateValidatorTO {
   hour: number;
   minute: number;
   month: number;
-  year: number;
   readonly type: FormValidatorType.MINDATE;
+  year: number;
 }
 
 export interface MinLengthValidatorTO {
   error_message: string | null;
-  value: number;
   readonly type: FormValidatorType.MINLENGTH;
+  value: number;
 }
 
 export interface MinValidatorTO {
   error_message: string | null;
-  value: number;
   readonly type: FormValidatorType.MIN;
+  value: number;
 }
 
 export interface MultiLineStringGeometryTO {
-  lines: CoordsListTO[];
   color: string | null;
+  lines: CoordsListTO[];
   readonly type: MapGeometryType.MULTI_LINE_STRING;
 }
 
 export interface MultiPolygonGeometryTO {
-  polygons: PolygonTO[];
   color: string | null;
+  polygons: PolygonTO[];
   readonly type: MapGeometryType.MULTI_POLYGON;
 }
 
@@ -1979,14 +2107,14 @@ export interface MultiSelectComponentTO {
   id: string;
   sensitive: boolean;
   title: string | null;
-  validators: FormValidatorTO[];
   readonly type: FormComponentType.MULTI_SELECT;
+  validators: FormValidatorTO[];
 }
 
 export interface MultiSelectComponentValueTO {
-  values: string[];
   id: string;
   readonly type: FormComponentType.MULTI_SELECT;
+  values: string[];
 }
 
 export interface MultiSelectFormMessageTO {
@@ -2376,8 +2504,8 @@ export interface NextActionSubmitTO {
 }
 
 export interface NextActionURLTO {
-  url: string;
   readonly type: NextActionType.URL;
+  url: string;
 }
 
 export interface NotificationSettingsButtonItemTO {
@@ -2394,10 +2522,10 @@ export interface NotificationSettingsSectionTO {
 
 export interface NotificationSettingsToggleItemTO {
   key: string;
-  value: boolean;
   subtitle: string | null;
   title: string;
   readonly type: NotificationSettingType.TOGGLE;
+  value: boolean;
 }
 
 export interface OauthFormMessageTO {
@@ -2518,20 +2646,20 @@ export interface OpeningHourTO {
 }
 
 export interface OpeningHoursListSectionItemTO {
-  opening_hours: OpeningInfoTO;
   background_color: string | null;
   icon: string | null;
   icon_color: string | null;
+  opening_hours: OpeningInfoTO;
   title: string | null;
   readonly type: MapListSectionItemType.OPENING_HOURS;
 }
 
 export interface OpeningHoursSectionItemTO {
-  opening_hours: OpeningHoursTO;
-  timezone: string;
   background_color: string | null;
   icon: string | null;
   icon_color: string | null;
+  opening_hours: OpeningHoursTO;
+  timezone: string;
   title: string | null;
   readonly type: MapListSectionItemType.DYNAMIC_OPENING_HOURS;
 }
@@ -2635,8 +2763,8 @@ export interface PersonalInfoComponentTO {
   id: string;
   sensitive: boolean;
   title: string | null;
-  validators: FormValidatorTO[];
   readonly type: FormComponentType.PERSONAL_INFO;
+  validators: FormValidatorTO[];
 }
 
 export interface PersonalInfoComponentValueTO {
@@ -2710,8 +2838,8 @@ export interface PokeServiceResponseTO {
 }
 
 export interface PolygonGeometryTO {
-  rings: CoordsListTO[];
   color: string | null;
+  rings: CoordsListTO[];
   readonly type: MapGeometryType.POLYGON;
 }
 
@@ -2735,7 +2863,7 @@ export interface PressMenuIconRequestTO {
   generation: number;
   hashed_tag: string | null;
   message_flow_run_id: string | null;
-  service: string | null;
+  service: string;
   static_flow_hash: string | null;
   timestamp: number;
 }
@@ -2751,6 +2879,7 @@ export interface ProfileAddressTO {
   geo_location: GeoPointTO;
   house_nr: string | null;
   label: string | null;
+  read_only: boolean;
   street_name: string | null;
   type: number;
   uid: string;
@@ -2760,6 +2889,7 @@ export interface ProfileAddressTO {
 export interface ProfileEmailTO {
   email: string;
   label: string | null;
+  read_only: boolean;
   type: number;
   verified: boolean;
 }
@@ -2767,6 +2897,7 @@ export interface ProfileEmailTO {
 export interface ProfilePhoneNumberTO {
   label: string | null;
   number: string;
+  read_only: boolean;
   type: number;
   uid: string;
 }
@@ -2850,8 +2981,8 @@ export interface ReceiveApiCallResultResponseTO {
 
 export interface RegexValidatorTO {
   error_message: string | null;
-  value: string | null;
   readonly type: FormValidatorType.REGEX;
+  value: string | null;
 }
 
 export interface ReportObjectionableContentRequestTO {
@@ -2933,9 +3064,17 @@ export interface SaveSettingsResponse {
 }
 
 export interface SearchSuggestionTO {
-  icon: string | null;
-  title: string | null;
+  icon: string;
+  title: string;
   readonly type: MapActionChipType.SEARCH_SUGGESTION;
+}
+
+export interface SearchTagTO {
+  icon: string;
+  multiselect: boolean;
+  tag: string;
+  title: string;
+  readonly type: MapActionChipType.SEARCH_TAG;
 }
 
 export interface SendApiCallCallbackResultTO {
@@ -2989,6 +3128,7 @@ export interface ServiceMenuItemTO {
   form: FormVersionTO | null;
   hashedTag: string | null;
   iconColor: string | null;
+  iconHash: string | null;
   iconName: string | null;
   label: string | null;
   link: ServiceMenuItemLinkTO | null;
@@ -3107,14 +3247,14 @@ export interface SingleSelectComponentTO {
   id: string;
   sensitive: boolean;
   title: string | null;
-  validators: FormValidatorTO[];
   readonly type: FormComponentType.SINGLE_SELECT;
+  validators: FormValidatorTO[];
 }
 
 export interface SingleSelectComponentValueTO {
-  value: string;
   id: string;
   readonly type: FormComponentType.SINGLE_SELECT;
+  value: string;
 }
 
 export interface SingleSelectFormMessageTO {
@@ -3531,14 +3671,14 @@ export interface TextInputComponentTO {
   placeholder: string | null;
   sensitive: boolean;
   title: string | null;
-  validators: FormValidatorTO[];
   readonly type: FormComponentType.TEXT_INPUT;
+  validators: FormValidatorTO[];
 }
 
 export interface TextInputComponentValueTO {
-  value: string;
   id: string;
   readonly type: FormComponentType.TEXT_INPUT;
+  value: string;
 }
 
 export interface TextLineFormMessageTO {
@@ -3597,12 +3737,12 @@ export interface Thumbnail {
 }
 
 export interface ToggleListSectionItemTO {
-  filled: boolean;
-  id: string;
-  state: string;
   background_color: string | null;
+  filled: boolean;
   icon: string | null;
   icon_color: string | null;
+  id: string;
+  state: string;
   title: string | null;
   readonly type: MapListSectionItemType.TOGGLE;
 }
