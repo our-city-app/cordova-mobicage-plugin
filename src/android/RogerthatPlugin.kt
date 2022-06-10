@@ -37,6 +37,7 @@ import com.mobicage.rogerthat.BarcodeScanningActivity
 import com.mobicage.rogerthat.BottomNavigationActivity
 import com.mobicage.rogerthat.IdentityStore
 import com.mobicage.rogerthat.analytics.logUrl
+import com.mobicage.rogerthat.home.HomeFragment
 import com.mobicage.rogerthat.home.HomeScreenContentResult
 import com.mobicage.rogerthat.home.HomeScreenViewModel
 import com.mobicage.rogerthat.home.UnsupportedHomeScreenVersion
@@ -130,7 +131,7 @@ class RogerthatPlugin : CordovaPlugin() {
         arguments: JSONObject?,
     ) {
         val args = arguments ?: JSONObject()
-        when (processAction(action)) {
+        when (action) {
             "start" -> {
                 if (mCallbackContext != null) {
                     callbackContext.error("RogerthatPlugin already running.")
@@ -184,10 +185,6 @@ class RogerthatPlugin : CordovaPlugin() {
                 callbackContext.error("RogerthatPlugin doesn't know how to execute this action.")
             }
         }
-    }
-
-    private fun processAction(action: String): String {
-        return action
     }
 
     private fun getNewsGroup(callbackContext: CallbackContext, request: GetNewsGroupRequestTO) {
@@ -620,7 +617,11 @@ class RogerthatPlugin : CordovaPlugin() {
 
     override fun pluginInitialize() {
         setRogerthatInterface()
-        this.fragment = getActivity().getTopFragment() as CordovaFragment
+        this.fragment = when (val fragment = getActivity().getTopFragment()) {
+            is CordovaFragment -> fragment
+            is HomeFragment -> fragment.getCordovaFragment()
+            else -> throw RuntimeException("Expected fragment to be either CordovaFragment or HomeFragment: $fragment")
+        }
         getActivity().registerReceiver(mBroadcastReceiver, getIntentFilter())
     }
 
