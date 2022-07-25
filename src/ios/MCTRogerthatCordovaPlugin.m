@@ -59,7 +59,7 @@
 
 @interface MCTRogerthatCordovaPlugin ()
 
-@property (nonatomic, copy) NSString *callbackId;
+@property (nonatomic, strong) NSMutableArray<NSString *> *callbackIds;
 @property (nonatomic, strong) MCTScreenBrandingHelper *helper;
 @end
 
@@ -84,7 +84,8 @@
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(viewWillLayoutSubviews:) name:CDVViewWillLayoutSubviewsNotification object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(viewDidLayoutSubviews:) name:CDVViewDidLayoutSubviewsNotification object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(viewWillTransitionToSize:) name:CDVViewWillTransitionToSizeNotification object:nil];
-
+    
+    self.callbackIds = [NSMutableArray array];
     self.helper = [MCTScreenBrandingHelper helperWithViewController:self.vc
                                                             service:self.vc.service
                                                                item:self.vc.item
@@ -123,14 +124,7 @@
 - (void)start:(CDVInvokedUrlCommand *)command
 {
     HERE();
-    if (self.callbackId) {
-        [self.commandDelegate sendPluginResult:[CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR
-                                                                 messageAsString:@"RogerthatPlugin already running."]
-                                    callbackId:command.callbackId];
-        return;
-    }
-
-    self.callbackId = command.callbackId;
+    [self.callbackIds addObject:command.callbackId];
 
     CDVPluginResult *pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_NO_RESULT];
     pluginResult.keepCallback = @(YES);
@@ -384,7 +378,9 @@
                                                   messageAsDictionary:@{@"callback": callback,
                                                                         @"args": args}];
     pluginResult.keepCallback = @(YES);
-    [self.commandDelegate sendPluginResult:pluginResult callbackId:self.callbackId];
+    for (NSString *callbackId in self.callbackIds) {
+        [self.commandDelegate sendPluginResult:pluginResult callbackId:callbackId];
+    }
 }
 
 - (void)sendArrayCallback:(NSString *)callbackId withData:(NSArray *)data
