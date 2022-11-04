@@ -79,6 +79,9 @@ class RogerthatPlugin : CordovaPlugin() {
     private var mPoker: Poker? = null
     private val mBroadcastReceiver = getBroadcastReceiver()
     private val callbackMap: MutableMap<String, CallbackContext> = HashMap()
+    private val brightnessDelegate = lazy { Brightness(getActivity()) }
+    private val brightness: Brightness by brightnessDelegate
+
     private val mIntentCallback: ActionScreenUtils.IntentCallback =
         object : ActionScreenUtils.IntentCallback {
             override fun apiResult(result: ServiceApiCallbackResult): Boolean {
@@ -180,6 +183,9 @@ class RogerthatPlugin : CordovaPlugin() {
             "util_open" -> openActivity(callbackContext, args)
             "util_playAudio" -> playAudio(callbackContext, args)
             "homescreen_getHomeScreenContent" -> getHomeScreen(callbackContext)
+            "brightness_set" -> brightness.setBrightness(args.getDouble("brightness").toFloat(), callbackContext)
+            "brightness_get" -> brightness.getBrightness(callbackContext)
+            "brightness_reset" -> brightness.restoreSystemBrightness(callbackContext)
             else -> {
                 L.e("RogerthatPlugin.execute did not match '$action'")
                 callbackContext.error("RogerthatPlugin doesn't know how to execute this action.")
@@ -242,6 +248,10 @@ class RogerthatPlugin : CordovaPlugin() {
         mActionScreenUtils.stop()
         getActivity().unregisterReceiver(mBroadcastReceiver)
         mPoker?.stop()
+        if (brightnessDelegate.isInitialized()) {
+            // In case we forgot to reset it, make sure the system brightness is restored
+            brightness.restoreSystemBrightness(null)
+        }
     }
 
     private fun returnArgsMissing(callbackContext: CallbackContext) {
@@ -630,10 +640,8 @@ class RogerthatPlugin : CordovaPlugin() {
         if (activity is BottomNavigationActivity) {
             return activity
         }
-        val msg = String.format(
-            "Expected activity using RogerthatPlugin to be BottomNavigationActivity: %s",
-            activity.toString()
-        )
+        val msg =
+            "Expected activity using RogerthatPlugin to be BottomNavigationActivity: $activity"
         L.bug(msg)
         throw RuntimeException(msg)
     }

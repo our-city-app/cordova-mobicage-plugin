@@ -171,7 +171,18 @@ function RogerthatPlugin() {
     this.system = {
         os: 'unknown',
         version: 'unknown',
-        appVersion: 'unknown'
+        appVersion: 'unknown',
+        brightness: {
+            get: () => new Promise(function (resolve, reject){
+                utils.exec(resolve, reject, 'brightness_get');
+            }),
+            set: (brightness) => new Promise(function (resolve, reject){
+                utils.exec(resolve, reject, 'brightness_set', [{brightness: brightness}]);
+            }),
+            reset: () => new Promise(function (resolve, reject){
+                utils.exec(resolve, reject, 'brightness_reset');
+            }),
+        }
     };
     this.ui = {
         hideKeyboard: function () {
