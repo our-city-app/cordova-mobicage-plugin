@@ -6,7 +6,6 @@ import com.mobicage.rogerthat.ServiceBoundActivity
 import org.apache.cordova.CallbackContext
 import org.json.JSONObject
 import kotlin.math.min
-import kotlin.math.roundToInt
 
 // Adapted from https://github.com/expo/expo/blob/main/packages/expo-brightness/android/src/main/java/expo/modules/brightness/BrightnessModule.kt
 
@@ -51,25 +50,6 @@ class Brightness(private val activity: ServiceBoundActivity) {
         }
     }
 
-    fun setSystemBrightness(brightnessValue: Float) {
-        // we have to just check this every time
-        // if we try to store a value for this permission, there is no way to know if the user has changed it
-        if (!Settings.System.canWrite(activity)) {
-            throw Error("ERR_BRIGHTNESS_PERMISSIONS_DENIED")
-        }
-        // manual mode must be set in order to change system brightness (sets the automatic mode off)
-        Settings.System.putInt(
-            activity.contentResolver,
-            Settings.System.SCREEN_BRIGHTNESS_MODE,
-            Settings.System.SCREEN_BRIGHTNESS_MODE_MANUAL
-        )
-        Settings.System.putInt(
-            activity.contentResolver,
-            Settings.System.SCREEN_BRIGHTNESS,
-            (brightnessValue * 255).roundToInt()
-        )
-    }
-
     fun restoreSystemBrightness(callbackContext: CallbackContext?) {
         val lp = activity.window.attributes
         lp.screenBrightness = WindowManager.LayoutParams.BRIGHTNESS_OVERRIDE_NONE
@@ -77,45 +57,4 @@ class Brightness(private val activity: ServiceBoundActivity) {
         callbackContext?.success(JSONObject())
     }
 
-    fun isUsingSystemBrightness(): Boolean {
-        val lp = activity.window.attributes
-        return lp.screenBrightness == WindowManager.LayoutParams.BRIGHTNESS_OVERRIDE_NONE
-    }
-
-    fun getSystemBrightnessMode(): Int {
-        val brightnessMode = Settings.System.getInt(
-            activity.contentResolver,
-            Settings.System.SCREEN_BRIGHTNESS_MODE
-        )
-        return brightnessModeNativeToJS(brightnessMode)
-    }
-
-    fun setSystemBrightnessMode(brightnessMode: Int) {
-        // we have to just check this every time
-        // if we try to store a value for this permission, there is no way to know if the user has changed it
-        if (!Settings.System.canWrite(activity)) {
-            throw Error("ERR_BRIGHTNESS_PERMISSIONS_DENIED")
-        }
-        Settings.System.putInt(
-            activity.contentResolver,
-            Settings.System.SCREEN_BRIGHTNESS_MODE,
-            brightnessModeJSToNative(brightnessMode)
-        )
-    }
-
-    private fun brightnessModeNativeToJS(nativeValue: Int): Int {
-        return when (nativeValue) {
-            Settings.System.SCREEN_BRIGHTNESS_MODE_AUTOMATIC -> 1
-            Settings.System.SCREEN_BRIGHTNESS_MODE_MANUAL -> 2
-            else -> 0
-        }
-    }
-
-    private fun brightnessModeJSToNative(jsValue: Int): Int {
-        return when (jsValue) {
-            1 -> Settings.System.SCREEN_BRIGHTNESS_MODE_AUTOMATIC
-            2 -> Settings.System.SCREEN_BRIGHTNESS_MODE_MANUAL
-            else -> throw Error("Unsupported brightness mode $jsValue")
-        }
-    }
 }
