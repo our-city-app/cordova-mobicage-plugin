@@ -61,6 +61,7 @@
 
 @property (nonatomic, strong) NSMutableArray<NSString *> *callbackIds;
 @property (nonatomic, strong) MCTScreenBrandingHelper *helper;
+@property (nonatomic) CGFloat originalBrightness;
 @end
 
 
@@ -90,6 +91,7 @@
                                                             service:self.vc.service
                                                                item:self.vc.item
                                                            delegate:self];
+    self.originalBrightness = -1.0;
 }
 
 
@@ -108,6 +110,10 @@
     HERE();
     if (![self.viewController isInNavigationController]) {
         [self.helper stop];
+        if (self.originalBrightness >= 0) {
+            [[UIScreen mainScreen] setBrightness:self.originalBrightness];
+            self.originalBrightness = -1.0;
+        }
     }
 }
 
@@ -217,6 +223,33 @@
     HERE();
     [self.helper getNewsStreamItemsWithResultHandler:[self resultHandlerWithCommand:command]
                                               params:[self getRequestParams:command]];
+}
+
+- (void)system_brightness_get:(CDVInvokedUrlCommand *)command
+{
+    HERE();
+    [self commandProcessed:command withResult:@{@"brightness":[NSDecimalNumber numberWithFloat:[[UIScreen mainScreen] brightness]]}];
+}
+
+- (void)system_brightness_set:(CDVInvokedUrlCommand *)command
+{
+    HERE();
+    if (self.originalBrightness < 0) {
+        self.originalBrightness = [[UIScreen mainScreen] brightness];
+    }
+    NSDictionary *params = [self getRequestParams:command];
+    [[UIScreen mainScreen] setBrightness:[params floatForKey:@"brightness"]];
+    [self commandProcessed:command]; // Empty stub
+}
+
+- (void)system_brightness_reset:(CDVInvokedUrlCommand *)command
+{
+    HERE();
+    if (self.originalBrightness >= 0) {
+        [[UIScreen mainScreen] setBrightness:self.originalBrightness];
+        self.originalBrightness = -1.0;
+    }
+    [self commandProcessed:command]; // Empty stub
 }
 
 - (void)ui_hideKeyboard:(CDVInvokedUrlCommand *)command

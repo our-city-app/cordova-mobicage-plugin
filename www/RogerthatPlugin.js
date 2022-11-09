@@ -174,13 +174,13 @@ function RogerthatPlugin() {
         appVersion: 'unknown',
         brightness: {
             get: () => new Promise(function (resolve, reject){
-                utils.exec(resolve, reject, 'brightness_get');
+                utils.exec(resolve, reject, 'system_brightness_get');
             }),
             set: (brightness) => new Promise(function (resolve, reject){
-                utils.exec(resolve, reject, 'brightness_set', [{brightness: brightness}]);
+                utils.exec(resolve, reject, 'system_brightness_set', [{brightness: brightness}]);
             }),
             reset: () => new Promise(function (resolve, reject){
-                utils.exec(resolve, reject, 'brightness_reset');
+                utils.exec(resolve, reject, 'system_brightness_reset');
             }),
         }
     };

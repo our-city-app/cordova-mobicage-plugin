@@ -183,9 +183,9 @@ class RogerthatPlugin : CordovaPlugin() {
             "util_open" -> openActivity(callbackContext, args)
             "util_playAudio" -> playAudio(callbackContext, args)
             "homescreen_getHomeScreenContent" -> getHomeScreen(callbackContext)
-            "brightness_set" -> brightness.setBrightness(args.getDouble("brightness").toFloat(), callbackContext)
-            "brightness_get" -> brightness.getBrightness(callbackContext)
-            "brightness_reset" -> brightness.restoreSystemBrightness(callbackContext)
+            "system_brightness_set" -> brightness.setBrightness(args.getDouble("brightness").toFloat(), callbackContext)
+            "system_brightness_get" -> brightness.getBrightness(callbackContext)
+            "system_brightness_reset" -> brightness.restoreSystemBrightness(callbackContext)
             else -> {
                 L.e("RogerthatPlugin.execute did not match '$action'")
                 callbackContext.error("RogerthatPlugin doesn't know how to execute this action.")
