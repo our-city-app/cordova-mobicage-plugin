@@ -56,6 +56,20 @@ export interface RogerthatSystem {
   debug: boolean;
   baseUrl: string;
   mainService: string;
+  brightness: {
+    /**
+     * returns a number between 0 and 1
+     */
+    get(): Promise<number>;
+    /**
+     * number between 0 and 1
+     */
+    set(brightness: number): Promise<void>;
+    /**
+     * Restore the brightness to the default (system) value
+     */
+    reset(): Promise<void>;
+  }
 }
 
 export interface RogerthatMessage {
@@ -81,7 +95,8 @@ export interface RogerthatCamera {
 }
 
 export interface RogerthatUI {
-  hideKeyboard: () => Promise<void>; // Android only
+  // android only / do not use: unfocus the text field instead (via textfield.blur()
+  hideKeyboard: () => Promise<void>;
 }
 
 export interface InternetConnectionStatus {

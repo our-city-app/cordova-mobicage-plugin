@@ -151,7 +151,6 @@ export const enum AppPage {
   QRCODE_READER = 'qrcode.reader',
   QRCODE_SCANNER = 'qrcode.scanner',
   QRCODE_SCANNER_RESULT = 'qrcode.scanner_result',
-  REGISTRATION_ACM = 'registration.acm',
   REGISTRATION_COMMUNITY = 'registration.community',
   REGISTRATION_DEVICE = 'registration.device',
   REGISTRATION_HOMESCREEN = 'registration.homescreen',
@@ -174,6 +173,7 @@ export const enum AppPage {
   SETTINGS_PROFILE_ADDRESS = 'settings.profile.address',
   SETTINGS_PROFILE_ADDRESSES = 'settings.profile.addresses',
   SETTINGS_PROFILE_CHANGE_HOME_SCREEN = 'settings.profile.home_screen',
+  SETTINGS_PROFILE_COMPLETE = 'settings.profile.complete',
   SETTINGS_PROFILE_EMAIL = 'settings.profile.email',
   SETTINGS_PROFILE_EMAILS = 'settings.profile.emails',
   SETTINGS_PROFILE_PHONE_NUMBER = 'settings.profile.phone_number',
@@ -594,6 +594,13 @@ export interface CreateNotificationRequestTO {
 export interface CreateNotificationResponseTO {
 }
 
+export interface CreatePopupMessageRequestTO {
+  message: PopupMessageTO;
+}
+
+export interface CreatePopupMessageResponseTO {
+}
+
 export interface DateSelectFormMessageTO {
   alert_flags: number;
   attachments: AttachmentTO[];
@@ -662,6 +669,12 @@ export interface DatetimeComponentValueTO {
   year: number;
 }
 
+export interface DefaultLocationTO {
+  distance: number;
+  latitude: number;
+  longitude: number;
+}
+
 export interface DeleteConversationRequestTO {
   parent_message_key: string | null;
 }
@@ -698,13 +711,6 @@ export interface DeleteProfilePhoneNumbersRequestTO {
 
 export interface DeleteProfilePhoneNumbersResponseTO {
   uids: string[];
-}
-
-export interface DisableNewsRequestTO {
-  news_id: number;
-}
-
-export interface DisableNewsResponseTO {
 }
 
 export interface EditProfileRequestTO {
@@ -747,6 +753,14 @@ export interface ErrorTO {
   caption: string | null;
   message: string | null;
   title: string | null;
+}
+
+export interface ExecutePopupMessageActionRequestTO {
+  action: string;
+  id: number;
+}
+
+export interface ExecutePopupMessageActionResponseTO {
 }
 
 export interface ExpandableListSectionItemTO {
@@ -1190,6 +1204,7 @@ export interface GetFormResponseTO {
   max_submissions: number;
   sections: FormSectionTO[];
   service: string;
+  show_summary: boolean;
   submission_section: FormSubmissionSectionTO | null;
   title: string | null;
   version: number;
@@ -1481,12 +1496,14 @@ export interface GetServiceActionInfoResponseTO {
 }
 
 export interface GetSingleSignOnLinkRequestTO {
+  login_choice: string | null;
   uid: string | null;
 }
 
 export interface GetSingleSignOnLinkResponseTO {
   code: string;
   data: string | null;
+  external: boolean;
 }
 
 export interface GetStaticFlowRequestTO {
@@ -1773,6 +1790,7 @@ export interface ListZipCodesResponseTO {
 }
 
 export interface LocationComponentTO {
+  default_location: DefaultLocationTO | null;
   description: string | null;
   id: string;
   sensitive: boolean;
@@ -1851,9 +1869,12 @@ export interface MapIconTO {
 }
 
 export interface MapItemDetailsTO {
+  coords: GeoPointTO;
   geometry: MapGeometryTO[];
+  icon: MapIconTO;
   id: string;
   sections: MapSectionTO[];
+  title: string;
 }
 
 export interface MapItemLineTextPartTO {
@@ -2476,7 +2497,6 @@ export interface NewsSenderTO {
 export interface NewsStreamItemTO {
   actions: number;
   buttons: NewsActionButtonTO[];
-  disabled: boolean;
   flags: number;
   id: number;
   media: MediaTO | null;
@@ -2845,6 +2865,18 @@ export interface PolygonGeometryTO {
 
 export interface PolygonTO {
   rings: CoordsListTO[];
+}
+
+export interface PopupMessageTO {
+  dismiss_button_text: string;
+  end_timestamp: number;
+  id: number;
+  image_url: string | null;
+  message: string;
+  sender_avatar_url: string;
+  sender_name: string;
+  start_timestamp: number;
+  title: string;
 }
 
 export interface PostalAddressTO {
