@@ -228,7 +228,8 @@
 - (void)system_brightness_get:(CDVInvokedUrlCommand *)command
 {
     HERE();
-    [self commandProcessed:command withResult:@{@"brightness":[NSDecimalNumber numberWithFloat:[[UIScreen mainScreen] brightness]]}];
+    [self commandProcessed:command
+                withResult:@{@"brightness":[NSDecimalNumber numberWithFloat:[[UIScreen mainScreen] brightness]]}];
 }
 
 - (void)system_brightness_set:(CDVInvokedUrlCommand *)command
@@ -239,7 +240,8 @@
     }
     NSDictionary *params = [self getRequestParams:command];
     [[UIScreen mainScreen] setBrightness:[params floatForKey:@"brightness"]];
-    [self commandProcessed:command]; // Empty stub
+    [self commandProcessed:command
+                withResult:@{}];
 }
 
 - (void)system_brightness_reset:(CDVInvokedUrlCommand *)command
@@ -249,7 +251,8 @@
         [[UIScreen mainScreen] setBrightness:self.originalBrightness];
         self.originalBrightness = -1.0;
     }
-    [self commandProcessed:command]; // Empty stub
+    [self commandProcessed:command
+                withResult:@{}];
 }
 
 - (void)ui_hideKeyboard:(CDVInvokedUrlCommand *)command
