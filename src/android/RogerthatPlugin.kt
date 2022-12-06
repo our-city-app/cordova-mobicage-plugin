@@ -32,10 +32,7 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.mobicage.api.news.Rpc.getNewsStreamItems
 import com.mobicage.rogerth.at.R
-import com.mobicage.rogerthat.App
-import com.mobicage.rogerthat.BarcodeScanningActivity
-import com.mobicage.rogerthat.BottomNavigationActivity
-import com.mobicage.rogerthat.IdentityStore
+import com.mobicage.rogerthat.*
 import com.mobicage.rogerthat.analytics.logUrl
 import com.mobicage.rogerthat.home.HomeFragment
 import com.mobicage.rogerthat.home.HomeScreenContentResult
@@ -459,16 +456,18 @@ class RogerthatPlugin : CordovaPlugin() {
         }
     }
 
-    private fun sendPluginResult(callbackContext: CallbackContext?, result: JSONObject) {
+    private fun sendPluginResult(callbackContext: CallbackContext, result: JSONObject) {
         val pluginResult = PluginResult(PluginResult.Status.OK, result)
         pluginResult.keepCallback = true
-        callbackContext!!.sendPluginResult(pluginResult)
+        callbackContext.sendPluginResult(pluginResult)
     }
 
     private fun notifyProfileChanges() {
-        val userInfo = JSONObject(getFriendsPlugin().userInfo)
-        for (context in userProfileCallbacks) {
-            sendPluginResult(context, userInfo)
+        (fragment.activity as ServiceBoundActivity).onServiceBound {
+            val userInfo = JSONObject(getFriendsPlugin().userInfo)
+            for (context in userProfileCallbacks) {
+                sendPluginResult(context, userInfo)
+            }
         }
     }
 
@@ -517,7 +516,7 @@ class RogerthatPlugin : CordovaPlugin() {
         val obj = JSONObject()
         obj.put("callback", callback)
         obj.put("args", args)
-        sendPluginResult(mCallbackContext, obj)
+        sendPluginResult(mCallbackContext!!, obj)
     }
 
     private fun poke(tag: String) {
