@@ -27,6 +27,7 @@ import android.content.Intent
 import android.content.IntentFilter
 import android.net.Uri
 import androidx.browser.customtabs.CustomTabsIntent
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
@@ -631,7 +632,12 @@ class RogerthatPlugin : CordovaPlugin() {
             is HomeFragment -> fragment.getCordovaFragment()
             else -> throw RuntimeException("Expected fragment to be either CordovaFragment or HomeFragment: $fragment")
         }
-        getActivity().registerReceiver(mBroadcastReceiver, getIntentFilter())
+        ContextCompat.registerReceiver(
+            getActivity(),
+            mBroadcastReceiver,
+            getIntentFilter(),
+            ContextCompat.RECEIVER_EXPORTED
+        )
     }
 
     private fun getActivity(): BottomNavigationActivity {
