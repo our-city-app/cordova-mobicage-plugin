@@ -33,6 +33,10 @@ export type FormValidatorTO =
   | RegexValidatorTO
   | RequiredValidatorTO;
 
+export type HomeScreenContent =
+  HomeScreenContentEmbeddedApp
+  | HomeScreenContentNative;
+
 export type JobOfferActionTO =
   JobOfferChatActionTO
   | JobOfferOpenActionTO;
@@ -207,6 +211,11 @@ export const enum FormValidatorType {
   MINLENGTH = 'minlength',
   REGEX = 'regex',
   REQUIRED = 'required',
+}
+
+export const enum HomeScreenContentType {
+  EMBEDDED_APP = 'embedded_app',
+  NATIVE = 'native',
 }
 
 export const enum JobOfferActionType {
@@ -846,6 +855,13 @@ export interface FindServiceResponseTO {
   matches: FindServiceCategoryTO[];
 }
 
+export interface FirestoreEmbeddedAppTO {
+  name: string;
+  serving_url: string;
+  url_regexes: string[];
+  version: number;
+}
+
 export interface FloatListWidgetResultTO {
   values: number[];
 }
@@ -1008,7 +1024,6 @@ export interface FriendSelectTO {
 
 export interface FriendTO {
   actionMenu: ServiceMenuTO | null;
-  appData: string | null;
   avatarHash: string | null;
   avatarId: number;
   callbacks: number;
@@ -1030,7 +1045,6 @@ export interface FriendTO {
   sharesContacts: boolean;
   sharesLocation: boolean;
   type: number;
-  userData: string | null;
   versions: number[];
 }
 
@@ -1217,13 +1231,6 @@ export interface GetFriendEmailsResponseTO {
   emails: string[];
   friend_set_version: number;
   generation: number;
-}
-
-export interface GetFriendInvitationSecretsRequestTO {
-}
-
-export interface GetFriendInvitationSecretsResponseTO {
-  secrets: string[];
 }
 
 export interface GetFriendRequestTO {
@@ -1589,6 +1596,63 @@ export interface HeartBeatResponseTO {
   systemTime: number;
 }
 
+export interface HomeScreen {
+  bottom_navigation: HomeScreenBottomNavigation;
+  bottom_sheet: HomeScreenBottomSheet;
+  content: HomeScreenContent;
+  default_language: string;
+  translations: { [key: string]: { [key: string]: string } };
+  version: number;
+}
+
+export interface HomeScreenBackground {
+  background_color: string | null;
+  images: HomeScreenBackgroundImage[];
+  text_color: string | null;
+}
+
+export interface HomeScreenBackgroundImage {
+  url: string;
+}
+
+export interface HomeScreenBottomNavigation {
+  buttons: HomeScreenNavigationButton[];
+}
+
+export interface HomeScreenBottomSheet {
+  header: HomeScreenBottomSheetHeader;
+  rows: MapSectionTO[];
+}
+
+export interface HomeScreenBottomSheetHeader {
+  image: string | null;
+  subtitle: string | null;
+  title: string;
+}
+
+export interface HomeScreenContentEmbeddedApp {
+  background: HomeScreenBackground | null;
+  embedded_app: string;
+  logo_url: string | null;
+  sections: MapSectionTO[];
+  service_email: string | null;
+  readonly type: HomeScreenContentType.EMBEDDED_APP;
+}
+
+export interface HomeScreenContentNative {
+  background: HomeScreenBackground | null;
+  logo_url: string | null;
+  sections: MapSectionTO[];
+  service_email: string | null;
+  readonly type: HomeScreenContentType.NATIVE;
+}
+
+export interface HomeScreenNavigationButton {
+  action: string;
+  icon: string;
+  label: string;
+}
+
 export interface HomeScreenTO {
   id: string;
   name: string;
@@ -1606,9 +1670,6 @@ export interface IdentityTO {
   homeScreenId: string | null;
   lastName: string | null;
   name: string | null;
-  owncloudPassword: string | null;
-  owncloudUri: string | null;
-  owncloudUsername: string | null;
   profileData: string | null;
   qualifiedIdentifier: string | null;
   readOnlyProperties: string[];
@@ -1750,7 +1811,7 @@ export interface LatLonTO {
 }
 
 export interface LineStringGeometryTO {
-  color: string | null;
+  color: string;
   line: CoordsListTO;
   readonly type: MapGeometryType.LINE_STRING;
 }
@@ -1869,17 +1930,14 @@ export interface MapIconTO {
 }
 
 export interface MapItemDetailsTO {
-  coords: GeoPointTO;
   geometry: MapGeometryTO[];
-  icon: MapIconTO;
   id: string;
   sections: MapSectionTO[];
-  title: string;
 }
 
 export interface MapItemLineTextPartTO {
   color: string | null;
-  text: string | null;
+  text: string;
 }
 
 export interface MapItemLineTextTO {
@@ -2111,13 +2169,13 @@ export interface MinValidatorTO {
 }
 
 export interface MultiLineStringGeometryTO {
-  color: string | null;
+  color: string;
   lines: CoordsListTO[];
   readonly type: MapGeometryType.MULTI_LINE_STRING;
 }
 
 export interface MultiPolygonGeometryTO {
-  color: string | null;
+  color: string;
   polygons: PolygonTO[];
   readonly type: MapGeometryType.MULTI_POLYGON;
 }
@@ -2524,6 +2582,7 @@ export interface NextActionSubmitTO {
 }
 
 export interface NextActionURLTO {
+  external: boolean;
   readonly type: NextActionType.URL;
   url: string;
 }
@@ -2858,7 +2917,7 @@ export interface PokeServiceResponseTO {
 }
 
 export interface PolygonGeometryTO {
-  color: string | null;
+  color: string;
   rings: CoordsListTO[];
   readonly type: MapGeometryType.POLYGON;
 }
@@ -2867,7 +2926,14 @@ export interface PolygonTO {
   rings: CoordsListTO[];
 }
 
+export interface PopupMessageButtonTO {
+  action_android: string;
+  action_ios: string;
+  caption: string;
+}
+
 export interface PopupMessageTO {
+  button: PopupMessageButtonTO | null;
   dismiss_button_text: string;
   end_timestamp: number;
   id: number;
@@ -3014,7 +3080,7 @@ export interface ReceiveApiCallResultResponseTO {
 export interface RegexValidatorTO {
   error_message: string | null;
   readonly type: FormValidatorType.REGEX;
-  value: string | null;
+  value: string;
 }
 
 export interface ReportObjectionableContentRequestTO {
@@ -3197,22 +3263,9 @@ export interface SetHomeScreenResponseTO {
 }
 
 export interface SettingsTO {
-  backgroundFetchTimestamps: number[];
   consent: ConsentSettingsTO | null;
-  geoLocationSamplingIntervalBattery: number;
-  geoLocationSamplingIntervalCharging: number;
-  geoLocationTracking: boolean;
-  geoLocationTrackingDays: number;
-  geoLocationTrackingTimeslot: number[];
   operatingVersion: number;
-  recordGeoLocationWithPhoneCalls: boolean;
-  recordPhoneCalls: boolean;
-  recordPhoneCallsDays: number;
-  recordPhoneCallsTimeslot: number[];
-  useGPSBattery: boolean;
-  useGPSCharging: boolean;
   version: number;
-  xmppReconnectInterval: number;
 }
 
 export interface ShareServiceRequestTO {
@@ -3888,26 +3941,6 @@ export interface UpdateDateSelectFormRequestTO {
 export interface UpdateDateSelectFormResponseTO {
 }
 
-export interface UpdateEmbeddedAppRequestTO {
-  description: string | null;
-  name: string;
-  serving_url: string | null;
-  title: string | null;
-  types: string[];
-  url_regexes: string[];
-  version: number;
-}
-
-export interface UpdateEmbeddedAppResponseTO {
-}
-
-export interface UpdateEmbeddedAppsRequestTO {
-  embedded_apps: EmbeddedAppTO[];
-}
-
-export interface UpdateEmbeddedAppsResponseTO {
-}
-
 export interface UpdateFriendRequestTO {
   friend: FriendTO;
   generation: number;
@@ -4188,13 +4221,9 @@ export interface UpdateTextLineFormResponseTO {
 }
 
 export interface UpdateUserDataRequestTO {
-  app_data: string | null;
   data: string | null;
-  keys: string[];
   service: string;
   type: string | null;
-  user_data: string | null;
-  values: string[];
 }
 
 export interface UpdateUserDataResponseTO {

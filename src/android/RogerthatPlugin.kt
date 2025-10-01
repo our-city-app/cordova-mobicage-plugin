@@ -31,10 +31,20 @@ import androidx.core.content.ContextCompat
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
 import com.mobicage.api.news.Rpc.getNewsStreamItems
 import com.mobicage.rogerth.at.R
-import com.mobicage.rogerthat.*
+import com.mobicage.rogerthat.App
+import com.mobicage.rogerthat.BarcodeScanningActivity
+import com.mobicage.rogerthat.BottomNavigationActivity
+import com.mobicage.rogerthat.IdentityStore
+import com.mobicage.rogerthat.ServiceBoundActivity
 import com.mobicage.rogerthat.analytics.logUrl
+import com.mobicage.rogerthat.getCachedDataFromReference
+import com.mobicage.rogerthat.getDataFromMap
+import com.mobicage.rogerthat.getServiceDataReference
+import com.mobicage.rogerthat.getUserDataFromCache
+import com.mobicage.rogerthat.getUserDataReference
 import com.mobicage.rogerthat.home.HomeFragment
 import com.mobicage.rogerthat.home.HomeScreenContentResult
 import com.mobicage.rogerthat.home.HomeScreenViewModel
@@ -50,6 +60,7 @@ import com.mobicage.rogerthat.plugins.system.SystemPlugin
 import com.mobicage.rogerthat.util.ActionScreenUtils
 import com.mobicage.rogerthat.util.JsonUtils
 import com.mobicage.rogerthat.util.RequestStore
+import com.mobicage.rogerthat.util.firestore.livedata
 import com.mobicage.rogerthat.util.logging.L
 import com.mobicage.rpc.IJSONable
 import com.mobicage.rpc.IntentResponseHandler
@@ -57,13 +68,14 @@ import com.mobicage.rpc.config.AppConstants
 import com.mobicage.to.news.GetNewsGroupRequestTO
 import com.mobicage.to.news.GetNewsStreamItemsRequestTO
 import com.mobicage.to.news.GetNewsStreamItemsResponseTO
+import kotlinx.coroutines.launch
 import org.apache.cordova.CallbackContext
 import org.apache.cordova.CordovaPlugin
 import org.apache.cordova.PluginResult
 import org.json.JSONArray
 import org.json.JSONObject
-import org.json.simple.JSONValue
-import java.util.*
+import java.util.Locale
+import java.util.UUID
 
 @Suppress("UNCHECKED_CAST")
 class RogerthatPlugin : CordovaPlugin() {
@@ -84,18 +96,6 @@ class RogerthatPlugin : CordovaPlugin() {
         object : ActionScreenUtils.IntentCallback {
             override fun apiResult(result: ServiceApiCallbackResult): Boolean {
                 return deliverApiResult(result)
-            }
-
-            override fun userDataUpdated(userData: String?) {
-                val jsonMap =
-                    if (userData == null) HashMap() else (JSONValue.parse(userData) as Map<String, Any?>)
-                sendCallbackUpdate("userDataUpdated", JSONObject(jsonMap))
-            }
-
-            override fun serviceDataUpdated(serviceData: String?) {
-                val jsonMap =
-                    if (serviceData == null) HashMap() else (JSONValue.parse(serviceData) as Map<String, Any?>)
-                sendCallbackUpdate("serviceDataUpdated", JSONObject(jsonMap))
             }
 
             override fun qrCodeScanned(result: Map<String, Any?>) {
@@ -145,16 +145,19 @@ class RogerthatPlugin : CordovaPlugin() {
                 callbackContext.sendPluginResult(pluginResult)
                 setInfo()
             }
+
             "log" -> {
                 log(args)
                 callbackContext.success(JSONObject())
             }
+
             "api_call" -> sendApiCall(callbackContext, args)
             "api_resultHandlerConfigured" -> {
                 mApiResultHandlerSet = true
                 mActionScreenUtils.deliverAllApiResults()
                 callbackContext.success(JSONObject())
             }
+
             "app_exit" -> exitApp(callbackContext)
             "camera_startScanningQrCode" -> startScanningQrCode(callbackContext)
             "camera_stopScanningQrCode" -> stopScanningQrCode(callbackContext)
@@ -166,12 +169,14 @@ class RogerthatPlugin : CordovaPlugin() {
                     JsonUtils.toMap(args)
                 )
             )
+
             "news_getNewsGroups" -> getNewsGroups(callbackContext)
             "news_getNewsStreamItems" -> getNewsStreamItems(
                 callbackContext, GetNewsStreamItemsRequestTO.fromJSONMap(
                     JsonUtils.toMap(args)
                 )
             )
+
             "ui_hideKeyboard" -> hideKeyboard(callbackContext)
             "user_put" -> putUserData(callbackContext, args)
             "user_getProfile" -> getUserProfile(callbackContext)
@@ -181,7 +186,10 @@ class RogerthatPlugin : CordovaPlugin() {
             "util_open" -> openActivity(callbackContext, args)
             "util_playAudio" -> playAudio(callbackContext, args)
             "homescreen_getHomeScreenContent" -> getHomeScreen(callbackContext)
-            "system_brightness_set" -> brightness.setBrightness(args.getDouble("brightness").toFloat(), callbackContext)
+            "system_brightness_set" -> brightness.setBrightness(
+                args.getDouble("brightness").toFloat(), callbackContext
+            )
+
             "system_brightness_get" -> brightness.getBrightness(callbackContext)
             "system_brightness_reset" -> brightness.restoreSystemBrightness(callbackContext)
             else -> {
@@ -264,12 +272,52 @@ class RogerthatPlugin : CordovaPlugin() {
         } else {
             ServiceMenuItemInfo(label, hash)
         }
-        val info = getFriendsPlugin().getRogerthatUserAndServiceInfo(
-            rogerthatInterface.getServiceEmail(),
-            rogerthatInterface.getServiceFriend(),
-            menuItem
-        )
-        sendCallbackUpdate("setInfo", JSONObject(info))
+        val serviceEmail = rogerthatInterface.getServiceEmail()
+        fragment.lifecycleScope.launch {
+            var userData: Map<String, Any> = mapOf()
+            var serviceData: Map<String, Any> = mapOf()
+            // First, get the user and service data from local cache to not slow down page load.
+            // Afterwards, get the current data & realtime updates from the server.
+            if (serviceEmail != null) {
+                serviceData = getCachedDataFromReference(getServiceDataReference(serviceEmail))
+                userData = getUserDataFromCache(serviceEmail)
+            }
+            val info = getFriendsPlugin().getRogerthatUserAndServiceInfo(
+                rogerthatInterface.getServiceFriend(),
+                menuItem,
+                serviceData,
+                userData,
+            )
+            sendCallbackUpdate("setInfo", JSONObject(info))
+            if (serviceEmail != null) {
+                try {
+                    val user =
+                        fragment.mainService.firebaseFirestoreAuthenticator!!.signInIfNeeded()
+                    getServiceDataReference(serviceEmail)
+                        .livedata { getDataFromMap(it) }
+                        .observe(fragment) {
+                            if (it != null) {
+                                if (serviceData != it) {
+                                    sendCallbackUpdate("serviceDataUpdated", JSONObject(it))
+                                    serviceData = it
+                                }
+                            }
+                        }
+                    getUserDataReference(serviceEmail, user.uid)
+                        .livedata { getDataFromMap(it) }
+                        .observe(fragment) {
+                            if (it != null) {
+                                if (userData != it) {
+                                    sendCallbackUpdate("userDataUpdated", JSONObject(it))
+                                    userData = it
+                                }
+                            }
+                        }
+                } catch (e: Exception) {
+                    L.e("Error while setting up realtime updates for user and service data", e)
+                }
+            }
+        }
     }
 
     private fun log(args: JSONObject) {
@@ -428,13 +476,12 @@ class RogerthatPlugin : CordovaPlugin() {
             return
         }
         val data = JsonUtils.optString(args, "u", null)
-        val smart = args.optBoolean("smart", false)
         val serviceEmail = rogerthatInterface.getServiceEmail()
         if (serviceEmail == null) {
             callbackContext.error("User data cannot be saved from a service-independent context")
             return
         }
-        getFriendsPlugin().putUserData(serviceEmail, data, smart)
+        getFriendsPlugin().putUserData(serviceEmail, data)
         callbackContext.success(JSONObject())
     }
 
@@ -686,13 +733,14 @@ class RogerthatPlugin : CordovaPlugin() {
                 NewsPlugin.GET_NEWS_GROUP_SUCCESS,
                 NewsPlugin.GET_NEWS_GROUPS_SUCCESS,
                 NewsPlugin.GET_NEWS_STREAM_ITEMS_SUCCESS,
-                -> callbackContext!!.success(
+                    -> callbackContext!!.success(
                     JSONObject(response!!.toJSONMap())
                 )
+
                 NewsPlugin.GET_NEWS_GROUP_FAILED,
                 NewsPlugin.GET_NEWS_GROUPS_FAILED,
                 NewsPlugin.GET_NEWS_STREAM_ITEMS_FAILED,
-                -> {
+                    -> {
                     val err = intent.getSerializableExtra(IntentResponseHandler.ERROR) as Exception
                     L.e(err)
                     error(
@@ -701,10 +749,12 @@ class RogerthatPlugin : CordovaPlugin() {
                         getActivity().getString(R.string.unknown_error_occurred)
                     )
                 }
+
                 IdentityStore.IDENTITY_CHANGED_INTENT -> {
                     reloadHomeScreen()
                     notifyProfileChanges()
                 }
+
                 CordovaFragment.INTENT_BROADCAST -> {
                     if (!rogerthatInterface.isEmbeddedApp())
                         return
