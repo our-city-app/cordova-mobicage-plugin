@@ -277,6 +277,11 @@ export const enum NewMessageType {
   MESSAGE = 1,
 }
 
+export const enum NewsGroupsStyle {
+  HORIZONTAL_CAROUSEL = 'horizontal_carousel',
+  TILES = 'tiles',
+}
+
 export const enum NextActionType {
   NEXT = 'next',
   SECTION = 'section',
@@ -738,16 +743,6 @@ export interface EditProfileRequestTO {
 export interface EditProfileResponseTO {
 }
 
-export interface EmbeddedAppTO {
-  description: string | null;
-  name: string;
-  serving_url: string | null;
-  title: string | null;
-  types: string[];
-  url_regexes: string[];
-  version: number;
-}
-
 export interface EndMessageFlowRequestTO {
   message_flow_run_id: string | null;
   parent_message_key: string;
@@ -1188,27 +1183,6 @@ export interface GetConversationStatisticsResponseTO {
   permission: string | null;
 }
 
-export interface GetEmbeddedAppRequestTO {
-  name: string | null;
-}
-
-export interface GetEmbeddedAppResponseTO {
-  description: string | null;
-  name: string;
-  serving_url: string | null;
-  title: string | null;
-  types: string[];
-  url_regexes: string[];
-  version: number;
-}
-
-export interface GetEmbeddedAppsRequestTO {
-}
-
-export interface GetEmbeddedAppsResponseTO {
-  embedded_apps: EmbeddedAppTO[];
-}
-
 export interface GetFormRequestTO {
   id: number;
 }
@@ -1411,6 +1385,7 @@ export interface GetNewsGroupsResponseTO {
   has_locations: boolean;
   if_empty: IfEmtpyScreenTO | null;
   rows: NewsGroupRowTO[];
+  style: NewsGroupsStyle | null;
 }
 
 export interface GetNewsItemDetailsRequestTO {
@@ -1601,6 +1576,7 @@ export interface HomeScreen {
   bottom_sheet: HomeScreenBottomSheet;
   content: HomeScreenContent;
   default_language: string;
+  offline_embedded_apps: FirestoreEmbeddedAppTO[];
   translations: { [key: string]: { [key: string]: string } };
   version: number;
 }

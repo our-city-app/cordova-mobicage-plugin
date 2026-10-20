@@ -741,7 +741,7 @@ class RogerthatPlugin : CordovaPlugin() {
                 NewsPlugin.GET_NEWS_GROUPS_FAILED,
                 NewsPlugin.GET_NEWS_STREAM_ITEMS_FAILED,
                     -> {
-                    val err = intent.getSerializableExtra(IntentResponseHandler.ERROR) as Exception
+                    val err = IntentResponseHandler.getError(intent)
                     L.e(err)
                     error(
                         callbackContext,
